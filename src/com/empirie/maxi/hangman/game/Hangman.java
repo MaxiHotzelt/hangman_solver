@@ -6,50 +6,63 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.empirie.maxi.hangman.solver.Solver;
+
 public class Hangman {
 	private static boolean gameOver = false;
 	private static boolean win = false;
+	private int leben = 6;
+	public static int versuche = 0;
 	
 	private List<Character> blacklist = new ArrayList<Character>(); 
 	private List<Character> gesuchtesWort = new ArrayList<Character>(); 
 	private List<Character> gesuchtesWortClone = new ArrayList<Character>(); 
 	private List<Character> momentanesWort = new ArrayList<Character>(); 
-	private int leben = 6;
-	
+	private Solver solver = new Solver();
+
 	
 	public static void main(String[] args) {
+		boolean playAgain = true;
+		String isPlayAgain = "y";
 		
 		Hangman hangman = new Hangman();
 		hangman.initGame();
 		
-		while(!gameOver) {
-			hangman.playGame();
+		while(playAgain) {
+			while(!gameOver) {
+				hangman.playGame();
+			}
+			if(win) {
+				System.out.println("Sie haben gewonnen!");
+				System.out.println("Versuche	:	" + hangman.getVersuche());
+				isPlayAgain = "n";
+			} else {
+				System.out.println("Sie haben leider verloren.");
+			}
+			
+			
+			System.out.print("Nochmal spielen? (y/n) ");
+			if(isPlayAgain.equals("y")) {
+				System.out.println("\n\n_____________________________________________\n");
+				hangman.resetGame();
+			} else {
+				playAgain = false;
+			}
+			
 		}
-		if(win) {
-			System.out.println("Sie haben gewonnen!");
-		} else {
-			System.out.println("Sie haben leider verloren.");
-		}
-		
 	}
-	private void initGame() {
-		gesuchtesWort.add('t');
-		gesuchtesWort.add('e');
-		gesuchtesWort.add('s');
-		gesuchtesWort.add('t');
-		momentanesWort.add('_');
-		momentanesWort.add('_');
-		momentanesWort.add('_');
-		momentanesWort.add('_');
-		
-		gesuchtesWortClone = new ArrayList<Character>(gesuchtesWort);
-		
-		
-	}
+	
 	public void playGame() {
 		
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		char[] test = {'a', 'b'};
 		
-		char myChar = getBuchstabe();
+		char myChar = solver.getChar(test);
 		while(isBuchstabeAufBlacklist(myChar)) {
 			myChar = getBuchstabe();
 		}
@@ -77,6 +90,40 @@ public class Hangman {
 				ausgabe();
 			}
 		}
+		
+		
+	}
+	
+	
+	private void resetGame() {
+		String neuesWort = gesuchtesWort.toString();
+		neuesWort = neuesWort.replaceAll("[,\\s\\[\\]]", "");
+		solver.addWortZuListe(neuesWort);
+		solver.resetBuchstabenCount();
+		solver.zaehleBuchstaben();
+		
+		gameOver = false;
+		leben = 6;
+		blacklist.clear();
+		
+		versuche++;
+	}
+	
+	private int getVersuche() {
+		return versuche;
+	}
+	
+	private void initGame() {
+		gesuchtesWort.add('t');
+		gesuchtesWort.add('e');
+		gesuchtesWort.add('s');
+		gesuchtesWort.add('t');
+		momentanesWort.add('_');
+		momentanesWort.add('_');
+		momentanesWort.add('_');
+		momentanesWort.add('_');
+		
+		gesuchtesWortClone = new ArrayList<Character>(gesuchtesWort);
 		
 		
 	}
