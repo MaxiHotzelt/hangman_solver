@@ -3,67 +3,135 @@ package com.empirie.maxi.hangman.solver;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.empirie.maxi.hangman.utils.FileUtils;
+
 public class Solver {
-	private List<String> wortListe = new ArrayList<String>();
-	private int[] buchstabenAnzahl = new int[26];
+	private List<String> initialWortListe = new ArrayList<String>();
+	private List<String> activeWortListe = new ArrayList<String>();
+	private List<String> uebergangsWortListe = new ArrayList<String>();
+	private List<Character> blacklist = new ArrayList<Character>(); 
+	private int[] buchstabenAnzahl = new int[30];
+	private char[] momentanesWort;
+	private boolean nachLaengeAussortiert = false;
 	
 	public Solver() {
-		loadWords();
-        
-        zaehleBuchstaben();
+		loadWordsFromFile();
 	}
 
 	private void loadWords() {
-		wortListe.add("Stromaggregat");
-        wortListe.add("Computergehaeuse");
-        wortListe.add("Feuerwerk");
-        wortListe.add("Feuerwehr");
-        wortListe.add("Puzzleteil");
-        wortListe.add("Pizzateig");
-        wortListe.add("Gleichberechtigungsbeauftragter");
-        wortListe.add("Haengewandschrankhalterung");
-        wortListe.add("lokomotive");
-        wortListe.add("photovoltaikanlage");
-        wortListe.add("Autowaschanlage");
-        wortListe.add("Element");
-        wortListe.add("Wagenheber");
-        wortListe.add("Haarwurzel");
-        wortListe.add("develop");
-        wortListe.add("Anwendungsentwickler");
-        wortListe.add("Fachmann");
-        wortListe.add("Feuerwehrmann");
-        wortListe.add("Jahr");
-        wortListe.add("Uhr");
-        wortListe.add("Prozent");
-        wortListe.add("Million");
-        wortListe.add("Mensch");
-        wortListe.add("gehen");
-        wortListe.add("verschieden");
-        wortListe.add("Leben");
-        wortListe.add("allerdings");
-        wortListe.add("verstehen");
-        wortListe.add("Mutter");
-        wortListe.add("ueberhaupt");
-        wortListe.add("besonders");
-        wortListe.add("politisch");
-        wortListe.add("Gesellschaft");
-        wortListe.add("moeglichkeit");
-        wortListe.add("Unternehmen");
-        wortListe.add("buch");
-        wortListe.add("haben");
-        wortListe.add("ich");
-        wortListe.add("werden");
-        wortListe.add("sie");
-        wortListe.add("dies");
+		initialWortListe.add("Stromaggregat");
+        initialWortListe.add("Computergehaeuse");
+        initialWortListe.add("Feuerwerk");
+        initialWortListe.add("Feuerwehr");
+        initialWortListe.add("Puzzleteil");
+        initialWortListe.add("Pizzateig");
+        initialWortListe.add("Gleichberechtigungsbeauftragter");
+        initialWortListe.add("Haengewandschrankhalterung");
+        initialWortListe.add("lokomotive");
+        initialWortListe.add("photovoltaikanlage");
+        initialWortListe.add("Autowaschanlage");
+        initialWortListe.add("Element");
+        initialWortListe.add("Wagenheber");
+        initialWortListe.add("Haarwurzel");
+        initialWortListe.add("develop");
+        initialWortListe.add("Anwendungsentwickler");
+        initialWortListe.add("Fachmann");
+        initialWortListe.add("Feuerwehrmann");
+        initialWortListe.add("Jahr");
+        initialWortListe.add("Uhr");
+        initialWortListe.add("Prozent");
+        initialWortListe.add("Halte");
+        initialWortListe.add("Mensch");
+        initialWortListe.add("gehen");
+        initialWortListe.add("verschieden");
+        initialWortListe.add("Leben");
+        initialWortListe.add("allerdings");
+        initialWortListe.add("verstehen");
+        initialWortListe.add("Mutter");
+        initialWortListe.add("ueberhaupt");
+        initialWortListe.add("besonders");
+        initialWortListe.add("politisch");
+        initialWortListe.add("Gesellschaft");
+        initialWortListe.add("moeglichkeit");
+        initialWortListe.add("Unternehmen");
+        initialWortListe.add("bowl");
+        initialWortListe.add("saat");
+        initialWortListe.add("dumm");
+        initialWortListe.add("ruth");
+        initialWortListe.add("buch");
+        initialWortListe.add("haben");
+        initialWortListe.add("ich");
+        initialWortListe.add("werden");
+        initialWortListe.add("sie");
+        initialWortListe.add("dies");
 	}
 	
 	private void loadWordsFromFile() {
-		
+		FileUtils fu = new FileUtils();
+		initialWortListe.addAll(fu.getWortListe());
 	}
 	
 	public char getChar(char[] wort) {
+		momentanesWort = wort;
+		if(nachLaengeAussortiert == false) {
+			schlieﬂeWoerterAnhandLaengeAus();
+		}
+		//muss gelˆscht werden, weil durch evtl. neuen gefunden Buchstaben die activeWortListe anders aussieht
+		activeWortListe.clear();
+		schlieﬂeWoerterAnhandGefunderBuchstabenAus();
+		resetBuchstabenCount();
+        zaehleBuchstaben();
+        schlieﬂeIndexBuchstabeAus();
+		int buchstabenIndex = findeBuchstabenIndexMitGroestemVorkommen();
+		
+		ausschlieﬂenBenutzerBuchstaben(buchstabenIndex);
+		
+		buchstabeAufBlackList(buchstabenIndex);
+		
+		return getBuchstabeDurchIndex(buchstabenIndex);
+	}
+	
+	private void schlieﬂeIndexBuchstabeAus() {
+		for (Character buchstabe : blacklist) {
+			buchstabenAnzahl[getPositionBuchstabe(buchstabe)] = -1;
+		}
+	}
+	
+	private void buchstabeAufBlackList(int indexBuchstabe) {
+		blacklist.add(getBuchstabeDurchIndex(indexBuchstabe));
+	}
+	
+	private void schlieﬂeWoerterAnhandLaengeAus() {
+		int wortLaenge = momentanesWort.length;
+		for (String wort : initialWortListe) {
+			if(wort.length() == wortLaenge) {
+				uebergangsWortListe.add(wort);
+			}
+		}
+		nachLaengeAussortiert = true;
+	}
+	
+	private void schlieﬂeWoerterAnhandGefunderBuchstabenAus() {
+		for (String wort : uebergangsWortListe) {
+			char [] wortToChar = wort.toCharArray();
+			boolean doAddWort = true;
+			for(int i = 0; i < wort.length(); i++) {
+				if(momentanesWort[i] != '_') {
+					if(momentanesWort[i] != wortToChar[i]) {
+						doAddWort = false;
+					}	
+				}
+			}
+			if(doAddWort) {
+				activeWortListe.add(wort);
+			}
+		}
+		
+	}
+	
+	private int findeBuchstabenIndexMitGroestemVorkommen() {
 		int indexHoechsterBuchstabe = -1;
-		int anzahlVorkommnisBuchstabe = 0;
+		int anzahlVorkommnisBuchstabe = -1;
 		
 		for (int i = 0; i < buchstabenAnzahl.length; i++) {
 			if(buchstabenAnzahl[i] > anzahlVorkommnisBuchstabe) {
@@ -72,23 +140,27 @@ public class Solver {
 			}
 		}
 		
-		ausschlieﬂenBenutzerBuchstaben(indexHoechsterBuchstabe);
-		
-		return getBuchstabeFromArray(indexHoechsterBuchstabe);
+		return indexHoechsterBuchstabe;
 	}
 	
 	private void ausschlieﬂenBenutzerBuchstaben(int indexOfBuchstabe) {
 		buchstabenAnzahl[indexOfBuchstabe] = -1;
 	}
 	
-	public void resetBuchstabenCount() {
+	public void resetSolver() {
+		resetBuchstabenCount();
+		nachLaengeAussortiert = false;
+		blacklist.clear();
+	}
+	
+	private void resetBuchstabenCount() {
 		for(int i = 0; i < buchstabenAnzahl.length; i++) {
 			buchstabenAnzahl[i] = 0;
 		}
 	}
 	
 	public void zaehleBuchstaben() {
-		for (String wort : wortListe) {
+		for (String wort : activeWortListe) {
 			wort = wort.toLowerCase();
 			setAnzahlBuchstaben(wort);
 		}
@@ -98,12 +170,13 @@ public class Solver {
 		for(char c : wort.toCharArray()) {
 			//erhˆht buchstabenIndex
 			int currentBuchstabenIdx = getPositionBuchstabe(c);
-			buchstabenAnzahl[currentBuchstabenIdx] = buchstabenAnzahl[currentBuchstabenIdx] + 1;
+			if(buchstabenAnzahl[currentBuchstabenIdx] != -1) {
+				buchstabenAnzahl[currentBuchstabenIdx] = buchstabenAnzahl[currentBuchstabenIdx] + 1;
+			}
 		}
 	}
 	
-	
-	private char getBuchstabeFromArray(int indexBuchstabe) {
+	private char getBuchstabeDurchIndex(int indexBuchstabe) {
 		switch (indexBuchstabe) {
 		case 0:
 			return 'a';
@@ -157,11 +230,18 @@ public class Solver {
 			return 'y';
 		case 25:
 			return 'z';
+		case 26:
+			return '‰';
+		case 27:
+			return 'ˆ';
+		case 28:
+			return '¸';
+		case 29:
+			return 'ﬂ';
 		default:
 			return '0';
 		}
 	}
-	
 	
 	private int getPositionBuchstabe(char c) {
 		switch (c) {
@@ -217,14 +297,21 @@ public class Solver {
 			return 24;
 		case 'z':
 			return 25;
+		case '‰':
+			return 26;
+		case 'ˆ':
+			return 27;
+		case '¸':
+			return 28;
+		case 'ﬂ':
+			return 29;
 		default:
 			return -1;
 		}
 	}
 	
-	
 	public void addWortZuListe(String wort) {
-		wortListe.add(wort);
+		initialWortListe.add(wort);
 	}
 	
 }
