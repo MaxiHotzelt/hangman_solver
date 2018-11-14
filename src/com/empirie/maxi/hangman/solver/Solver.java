@@ -38,8 +38,6 @@ public class Solver {
         
 		int buchstabenIndex = findeBuchstabenIndexMitGroestemVorkommen();
 		
-		ausschlieﬂenBenutzerBuchstaben(buchstabenIndex);
-		
 		buchstabeAufBlackList(buchstabenIndex);
 		
 		return getBuchstabeDurchIndex(buchstabenIndex);
@@ -107,15 +105,12 @@ public class Solver {
 		return indexHoechsterBuchstabe;
 	}
 	
-	private void ausschlieﬂenBenutzerBuchstaben(int indexOfBuchstabe) {
-		buchstabenAnzahl[indexOfBuchstabe] = -1;
-	}
-	
 	public void resetSolver() {
 		resetBuchstabenCount();
 		nachLaengeAussortiert = false;
 		blacklist.clear();
 	}
+	
 	
 	private void resetBuchstabenCount() {
 		for(int i = 0; i < buchstabenAnzahl.length; i++) {
@@ -123,12 +118,14 @@ public class Solver {
 		}
 	}
 	
+	
 	public void zaehleBuchstaben() {
 		for (String wort : activeWortListe) {
 			wort = wort.toLowerCase();
 			setAnzahlBuchstaben(wort);
 		}
 	}
+	
 	
 	private void setAnzahlBuchstaben(String wort) {
 		for(char c : wort.toCharArray()) {
@@ -139,6 +136,7 @@ public class Solver {
 			}
 		}
 	}
+	
 	
 	private char getBuchstabeDurchIndex(int indexBuchstabe) {
 		switch (indexBuchstabe) {
@@ -207,6 +205,7 @@ public class Solver {
 		}
 	}
 	
+	
 	private int getPositionBuchstabe(char c) {
 		switch (c) {
 		case 'a':
@@ -273,6 +272,7 @@ public class Solver {
 			return -1;
 		}
 	}
+	
 	
 	public void addWortZuListe(String wort) {
 		initialWortListe.add(wort);

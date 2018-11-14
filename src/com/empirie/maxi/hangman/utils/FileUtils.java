@@ -14,7 +14,11 @@ public class FileUtils {
 		createWortListe();
 	}
 	
-	public String trimWort(String wort) {
+	public String wortAufbereiten(String wort) {
+		wort = wort.replaceAll("ä", "ae");
+		wort = wort.replaceAll("ö", "oe");
+		wort = wort.replaceAll("ü", "ue");
+		wort = wort.replaceAll("ß", "ss");
 		return wort.replaceAll("[^a-zA-Z]", "");
 	}
 	
@@ -30,7 +34,7 @@ public class FileUtils {
 		    
 		    while (wort != null) {
     	    	if(wort != null && !wort.equals("") && !wort.equals("åland")) {
-    	    		wort = trimWort(wort);
+    	    		wort = wortAufbereiten(wort);
     	    		wortListe.add(wort);
     	    	}
     	     	wort = br.readLine();

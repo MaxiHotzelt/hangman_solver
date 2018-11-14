@@ -17,11 +17,12 @@ public class Hangman {
 	private static int leben = 6;
 	
 	private List<Character> blacklist = new ArrayList<Character>(); 
-	private String gesuchtesWort;
+	private String gesuchtesWortTrimmed;
+	private String gesuchtesWortOrginal;
 	private char[] momentanesWort;
 	private StringBuilder gesuchtesWortClone = new StringBuilder(); 
 	private Solver solver = new Solver();
-
+	private boolean isWortNomen = false;
 	
 	public static void main(String[] args) {
 			boolean playAgain = true;
@@ -55,14 +56,16 @@ public class Hangman {
 		}
 	
 	private void initGame() {
-		gesuchtesWort = getRandomWort().toLowerCase();
+		gesuchtesWortOrginal = getRandomWort();
+		gesuchtesWortTrimmed = gesuchtesWortOrginal.toLowerCase();
+		isWortNomen();
 		//gesuchtesWort = "gifttinktur";
-		momentanesWort = new char[gesuchtesWort.length()];
+		momentanesWort = new char[gesuchtesWortTrimmed.length()];
 		for (int i = 0; i < momentanesWort.length; i++) {
 			momentanesWort[i] = '_';
 		}
 
-		gesuchtesWortClone.replace(0, gesuchtesWortClone.length(), gesuchtesWort);
+		gesuchtesWortClone.replace(0, gesuchtesWortClone.length(), gesuchtesWortTrimmed);
 	}
 	
 	public void playGame() {
@@ -113,7 +116,7 @@ public class Hangman {
 	}
 
 	private void resetGame() {
-			String neuesWort = gesuchtesWort.toString();
+			String neuesWort = gesuchtesWortTrimmed.toString();
 			neuesWort = neuesWort.replaceAll("[,\\s\\[\\]]", "");
 			solver.addWortZuListe(neuesWort);
 			solver.resetSolver();
@@ -122,16 +125,22 @@ public class Hangman {
 			gameOver = false;
 			leben = 6;
 			blacklist.clear();
-			momentanesWort = new char[gesuchtesWort.length()];
+			momentanesWort = new char[gesuchtesWortTrimmed.length()];
 			for (int i = 0; i < momentanesWort.length; i++) {
 				momentanesWort[i] = '_';
 			}
 
-			gesuchtesWortClone.replace(0, gesuchtesWortClone.length(), gesuchtesWort);
+			gesuchtesWortClone.replace(0, gesuchtesWortClone.length(), gesuchtesWortTrimmed);
 			
 			versuche++;
 		}
-		
+	
+	private void isWortNomen() {
+		if(Character.isUpperCase(gesuchtesWortOrginal.charAt(0))) {
+			isWortNomen = true;
+		}
+	}
+	
 	private char getChar() {
 			System.out.print("Buchstaben eingeben: ");
 			String myStringChar = readText();
@@ -159,13 +168,18 @@ public class Hangman {
 			while(isBuchstabeVorhanden(myChar)) {
 				int indexOfBuchstabe = gesuchtesWortClone.toString().indexOf(myChar);
 				gesuchtesWortClone.replace(indexOfBuchstabe, indexOfBuchstabe+1, "_");
-				momentanesWort[indexOfBuchstabe] = myChar;
+				if(indexOfBuchstabe == 0 && isWortNomen) {
+					momentanesWort[indexOfBuchstabe] = Character.toUpperCase(myChar);
+				} else {
+					momentanesWort[indexOfBuchstabe] = myChar;
+				}
+				
 			}
 			
 		}
 		
 	private boolean isWortGefunden() {
-			if(gesuchtesWort.equals(String.valueOf(momentanesWort))) {
+			if(gesuchtesWortOrginal.equals(String.valueOf(momentanesWort))) {
 				return true;
 			} else {
 				return false;
