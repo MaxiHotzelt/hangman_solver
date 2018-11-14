@@ -17,54 +17,6 @@ public class Solver {
 	public Solver() {
 		loadWordsFromFile();
 	}
-
-	private void loadWords() {
-		initialWortListe.add("Stromaggregat");
-        initialWortListe.add("Computergehaeuse");
-        initialWortListe.add("Feuerwerk");
-        initialWortListe.add("Feuerwehr");
-        initialWortListe.add("Puzzleteil");
-        initialWortListe.add("Pizzateig");
-        initialWortListe.add("Gleichberechtigungsbeauftragter");
-        initialWortListe.add("Haengewandschrankhalterung");
-        initialWortListe.add("lokomotive");
-        initialWortListe.add("photovoltaikanlage");
-        initialWortListe.add("Autowaschanlage");
-        initialWortListe.add("Element");
-        initialWortListe.add("Wagenheber");
-        initialWortListe.add("Haarwurzel");
-        initialWortListe.add("develop");
-        initialWortListe.add("Anwendungsentwickler");
-        initialWortListe.add("Fachmann");
-        initialWortListe.add("Feuerwehrmann");
-        initialWortListe.add("Jahr");
-        initialWortListe.add("Uhr");
-        initialWortListe.add("Prozent");
-        initialWortListe.add("Halte");
-        initialWortListe.add("Mensch");
-        initialWortListe.add("gehen");
-        initialWortListe.add("verschieden");
-        initialWortListe.add("Leben");
-        initialWortListe.add("allerdings");
-        initialWortListe.add("verstehen");
-        initialWortListe.add("Mutter");
-        initialWortListe.add("ueberhaupt");
-        initialWortListe.add("besonders");
-        initialWortListe.add("politisch");
-        initialWortListe.add("Gesellschaft");
-        initialWortListe.add("moeglichkeit");
-        initialWortListe.add("Unternehmen");
-        initialWortListe.add("bowl");
-        initialWortListe.add("saat");
-        initialWortListe.add("dumm");
-        initialWortListe.add("ruth");
-        initialWortListe.add("buch");
-        initialWortListe.add("haben");
-        initialWortListe.add("ich");
-        initialWortListe.add("werden");
-        initialWortListe.add("sie");
-        initialWortListe.add("dies");
-	}
 	
 	private void loadWordsFromFile() {
 		FileUtils fu = new FileUtils();
@@ -73,15 +25,17 @@ public class Solver {
 	
 	public char getChar(char[] wort) {
 		momentanesWort = wort;
-		if(nachLaengeAussortiert == false) {
-			schlieﬂeWoerterAnhandLaengeAus();
-		}
-		//muss gelˆscht werden, weil durch evtl. neuen gefunden Buchstaben die activeWortListe anders aussieht
-		activeWortListe.clear();
-		schlieﬂeWoerterAnhandGefunderBuchstabenAus();
+		bereiteWortlisteAuf();
+		
 		resetBuchstabenCount();
         zaehleBuchstaben();
-        schlieﬂeIndexBuchstabeAus();
+        
+		return findeBestenBuchstaben();
+	}
+	
+	private char findeBestenBuchstaben() {
+        schlieﬂeBereitsGewaehlteBuchstabeAus();
+        
 		int buchstabenIndex = findeBuchstabenIndexMitGroestemVorkommen();
 		
 		ausschlieﬂenBenutzerBuchstaben(buchstabenIndex);
@@ -91,7 +45,17 @@ public class Solver {
 		return getBuchstabeDurchIndex(buchstabenIndex);
 	}
 	
-	private void schlieﬂeIndexBuchstabeAus() {
+	private void bereiteWortlisteAuf() {
+		if(!nachLaengeAussortiert) {
+			schlieﬂeWoerterAnhandLaengeAus();
+		}
+		//muss gelˆscht werden, weil durch evtl. neuen gefunden Buchstaben die activeWortListe anders aussieht
+		activeWortListe.clear();
+		
+		schlieﬂeWoerterAnhandGefunderBuchstabenAus();
+	}
+	
+	private void schlieﬂeBereitsGewaehlteBuchstabeAus() {
 		for (Character buchstabe : blacklist) {
 			buchstabenAnzahl[getPositionBuchstabe(buchstabe)] = -1;
 		}

@@ -56,6 +56,7 @@ public class Hangman {
 	
 	private void initGame() {
 		gesuchtesWort = getRandomWort().toLowerCase();
+		//gesuchtesWort = "gifttinktur";
 		momentanesWort = new char[gesuchtesWort.length()];
 		for (int i = 0; i < momentanesWort.length; i++) {
 			momentanesWort[i] = '_';
@@ -121,7 +122,12 @@ public class Hangman {
 			gameOver = false;
 			leben = 6;
 			blacklist.clear();
-			initGame();
+			momentanesWort = new char[gesuchtesWort.length()];
+			for (int i = 0; i < momentanesWort.length; i++) {
+				momentanesWort[i] = '_';
+			}
+
+			gesuchtesWortClone.replace(0, gesuchtesWortClone.length(), gesuchtesWort);
 			
 			versuche++;
 		}
