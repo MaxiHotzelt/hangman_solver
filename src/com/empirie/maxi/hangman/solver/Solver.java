@@ -10,7 +10,7 @@ public class Solver {
 	private List<String> activeWortListe = new ArrayList<String>();
 	private List<String> uebergangsWortListe = new ArrayList<String>();
 	private List<Character> blacklist = new ArrayList<Character>(); 
-	private int[] buchstabenAnzahl = new int[30];
+	private int[] buchstabenAnzahl = new int[26];
 	private char[] momentanesWort;
 	private boolean nachLaengeAussortiert = false;
 	
@@ -34,7 +34,7 @@ public class Solver {
 	}
 	
 	private char findeBestenBuchstaben() {
-        schlieﬂeBereitsGewaehlteBuchstabeAus();
+        schlie√üeBereitsGewaehlteBuchstabeAus();
         
 		int buchstabenIndex = findeBuchstabenIndexMitGroestemVorkommen();
 		
@@ -45,15 +45,15 @@ public class Solver {
 	
 	private void bereiteWortlisteAuf() {
 		if(!nachLaengeAussortiert) {
-			schlieﬂeWoerterAnhandLaengeAus();
+			schlie√üeWoerterAnhandLaengeAus();
 		}
-		//muss gelˆscht werden, weil durch evtl. neuen gefunden Buchstaben die activeWortListe anders aussieht
+		//muss gel√∂scht werden, weil durch evtl. neuen gefunden Buchstaben die activeWortListe anders aussieht
 		activeWortListe.clear();
 		
-		schlieﬂeWoerterAnhandGefunderBuchstabenAus();
+		schlie√üeWoerterAnhandGefunderBuchstabenAus();
 	}
 	
-	private void schlieﬂeBereitsGewaehlteBuchstabeAus() {
+	private void schlie√üeBereitsGewaehlteBuchstabeAus() {
 		for (Character buchstabe : blacklist) {
 			buchstabenAnzahl[getPositionBuchstabe(buchstabe)] = -1;
 		}
@@ -63,7 +63,7 @@ public class Solver {
 		blacklist.add(getBuchstabeDurchIndex(indexBuchstabe));
 	}
 	
-	private void schlieﬂeWoerterAnhandLaengeAus() {
+	private void schlie√üeWoerterAnhandLaengeAus() {
 		int wortLaenge = momentanesWort.length;
 		for (String wort : initialWortListe) {
 			if(wort.length() == wortLaenge) {
@@ -73,7 +73,7 @@ public class Solver {
 		nachLaengeAussortiert = true;
 	}
 	
-	private void schlieﬂeWoerterAnhandGefunderBuchstabenAus() {
+	private void schlie√üeWoerterAnhandGefunderBuchstabenAus() {
 		for (String wort : uebergangsWortListe) {
 			char [] wortToChar = wort.toCharArray();
 			boolean doAddWort = true;
@@ -129,7 +129,7 @@ public class Solver {
 	
 	private void setAnzahlBuchstaben(String wort) {
 		for(char c : wort.toCharArray()) {
-			//erhˆht buchstabenIndex
+			//erh√∂ht buchstabenIndex
 			int currentBuchstabenIdx = getPositionBuchstabe(c);
 			if(buchstabenAnzahl[currentBuchstabenIdx] != -1) {
 				buchstabenAnzahl[currentBuchstabenIdx] = buchstabenAnzahl[currentBuchstabenIdx] + 1;
@@ -192,14 +192,6 @@ public class Solver {
 			return 'y';
 		case 25:
 			return 'z';
-		case 26:
-			return '‰';
-		case 27:
-			return 'ˆ';
-		case 28:
-			return '¸';
-		case 29:
-			return 'ﬂ';
 		default:
 			return '0';
 		}
@@ -260,14 +252,6 @@ public class Solver {
 			return 24;
 		case 'z':
 			return 25;
-		case '‰':
-			return 26;
-		case 'ˆ':
-			return 27;
-		case '¸':
-			return 28;
-		case 'ﬂ':
-			return 29;
 		default:
 			return -1;
 		}

@@ -3,7 +3,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.xml.internal.ws.util.StringUtils;
 public class FileUtils {
 
 
@@ -15,10 +14,10 @@ public class FileUtils {
 	}
 	
 	public String wortAufbereiten(String wort) {
-		wort = wort.replaceAll("ä", "ae");
-		wort = wort.replaceAll("ö", "oe");
-		wort = wort.replaceAll("ü", "ue");
-		wort = wort.replaceAll("ß", "ss");
+		wort = wort.replaceAll("Ã¤", "ae");
+		wort = wort.replaceAll("Ã¶", "oe");
+		wort = wort.replaceAll("Ã¼", "ue");
+		wort = wort.replaceAll("ÃŸ", "ss");
 		return wort.replaceAll("[^a-zA-Z]", "");
 	}
 	
@@ -28,12 +27,12 @@ public class FileUtils {
 	
 	private void createWortListe() {
 		try {
-			File fileDir = new File("E:\\develop\\hangman_solver\\bin\\com\\empirie\\maxi\\hangman\\utils\\wortsammlung.txt");
+			File fileDir = new File("E:\\develop\\hangman_solver\\src\\com\\empirie\\maxi\\hangman\\utils\\wortliste.txt");
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileDir), "UTF8"));
 		    String wort = "";
 		    
 		    while (wort != null) {
-    	    	if(wort != null && !wort.equals("") && !wort.equals("åland")) {
+    	    	if(wort != null && !wort.equals("")) {
     	    		wort = wortAufbereiten(wort);
     	    		wortListe.add(wort);
     	    	}

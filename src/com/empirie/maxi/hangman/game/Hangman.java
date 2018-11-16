@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.empirie.maxi.hangman.solver.KaisSolver;
 import com.empirie.maxi.hangman.solver.Solver;
 import com.empirie.maxi.hangman.utils.FileUtils;
 
@@ -22,6 +23,7 @@ public class Hangman {
 	private char[] momentanesWort;
 	private StringBuilder gesuchtesWortClone = new StringBuilder(); 
 	private Solver solver = new Solver();
+	private KaisSolver kaisSolver = new KaisSolver();
 	private boolean isWortNomen = false;
 	
 	public static void main(String[] args) {
@@ -57,9 +59,9 @@ public class Hangman {
 	
 	private void initGame() {
 		gesuchtesWortOrginal = getRandomWort();
+		//gesuchtesWortOrginal = "openairkonzert";
 		gesuchtesWortTrimmed = gesuchtesWortOrginal.toLowerCase();
 		isWortNomen();
-		//gesuchtesWort = "gifttinktur";
 		momentanesWort = new char[gesuchtesWortTrimmed.length()];
 		for (int i = 0; i < momentanesWort.length; i++) {
 			momentanesWort[i] = '_';
@@ -75,8 +77,11 @@ public class Hangman {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+
+
+			//char myChar = kaisSolver.getChar(momentanesWort);
 			char myChar = solver.getChar(momentanesWort);
+			//char myChar = getChar();
 			while(isBuchstabeAufBlacklist(myChar)) {
 				myChar = getChar();
 			}
@@ -179,7 +184,7 @@ public class Hangman {
 		}
 		
 	private boolean isWortGefunden() {
-			if(gesuchtesWortOrginal.equals(String.valueOf(momentanesWort))) {
+			if(gesuchtesWortTrimmed.equals(String.valueOf(momentanesWort).toLowerCase())) {
 				return true;
 			} else {
 				return false;
