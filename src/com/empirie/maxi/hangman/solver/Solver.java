@@ -1,14 +1,14 @@
 package com.empirie.maxi.hangman.solver;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.empirie.maxi.hangman.utils.FileUtils;
 
 public class Solver {
 	private List<String> initialWortListe = new ArrayList<String>();
-	private List<String> activeWortListe = new ArrayList<String>();
-	private List<String> uebergangsWortListe = new ArrayList<String>();
 	private List<Character> blacklist = new ArrayList<Character>(); 
 	private int[] buchstabenAnzahl = new int[26];
 	private char[] momentanesWort;
@@ -34,7 +34,10 @@ public class Solver {
 	}
 	
 	private char findeBestenBuchstaben() {
-        schließeBereitsGewaehlteBuchstabeAus();
+        // schließe bereits gewaehlte buchstaben aus
+        for (Character buchstabe : blacklist) {
+			buchstabenAnzahl[getPositionBuchstabe(buchstabe)] = -1;
+		}
         
 		int buchstabenIndex = findeBuchstabenIndexMitGroestemVorkommen();
 		
@@ -47,8 +50,6 @@ public class Solver {
 		if(!nachLaengeAussortiert) {
 			schließeWoerterAnhandLaengeAus();
 		}
-		//muss gelöscht werden, weil durch evtl. neuen gefunden Buchstaben die activeWortListe anders aussieht
-		activeWortListe.clear();
 		
 		schließeWoerterAnhandGefunderBuchstabenAus();
 	}
@@ -65,16 +66,19 @@ public class Solver {
 	
 	private void schließeWoerterAnhandLaengeAus() {
 		int wortLaenge = momentanesWort.length;
+		ArrayList<String> tempUebergangsWortListe = new ArrayList<String>();
 		for (String wort : initialWortListe) {
 			if(wort.length() == wortLaenge) {
-				uebergangsWortListe.add(wort);
+				tempUebergangsWortListe.add(wort);
 			}
 		}
 		nachLaengeAussortiert = true;
+		this.initialWortListe = tempUebergangsWortListe;
 	}
 	
 	private void schließeWoerterAnhandGefunderBuchstabenAus() {
-		for (String wort : uebergangsWortListe) {
+		ArrayList<String> tempUebergangsWortListe = new ArrayList<String>();
+		for (String wort : initialWortListe) {
 			char [] wortToChar = wort.toCharArray();
 			boolean doAddWort = true;
 			for(int i = 0; i < wort.length(); i++) {
@@ -85,7 +89,8 @@ public class Solver {
 				}
 			}
 			if(doAddWort) {
-				activeWortListe.add(wort);
+				tempUebergangsWortListe.add(wort);
+				initialWortListe = tempUebergangsWortListe;
 			}
 		}
 		
@@ -120,7 +125,7 @@ public class Solver {
 	
 	
 	public void zaehleBuchstaben() {
-		for (String wort : activeWortListe) {
+		for (String wort : initialWortListe) {
 			wort = wort.toLowerCase();
 			setAnzahlBuchstaben(wort);
 		}
@@ -131,7 +136,7 @@ public class Solver {
 		for(char c : wort.toCharArray()) {
 			//erhöht buchstabenIndex
 			int currentBuchstabenIdx = getPositionBuchstabe(c);
-			if(buchstabenAnzahl[currentBuchstabenIdx] != -1) {
+			if(buchstabenAnzahl[currentBuchstabenIdx] != -1) {	
 				buchstabenAnzahl[currentBuchstabenIdx] = buchstabenAnzahl[currentBuchstabenIdx] + 1;
 			}
 		}

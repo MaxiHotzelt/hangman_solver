@@ -14,6 +14,9 @@ public class FileUtils {
 	}
 	
 	public String wortAufbereiten(String wort) {
+		/*
+		 * TODO große umlaute abfangen
+		 */
 		wort = wort.replaceAll("ä", "ae");
 		wort = wort.replaceAll("ö", "oe");
 		wort = wort.replaceAll("ü", "ue");

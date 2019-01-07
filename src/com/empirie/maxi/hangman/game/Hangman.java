@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 import com.empirie.maxi.hangman.solver.KaisSolver;
@@ -27,34 +28,36 @@ public class Hangman {
 	private boolean isWortNomen = false;
 	
 	public static void main(String[] args) {
-			boolean playAgain = true;
-			String isPlayAgain = "y";
+			long start = System.currentTimeMillis();
+			boolean isPlayAgain = true;
+			String playAgain = "y";
 			
 			Hangman hangman = new Hangman();
 			hangman.initGame();
 			
-			while(playAgain) {
+			while(isPlayAgain) {
 				while(!gameOver) {
 					hangman.playGame();
 				}
 				if(win) {
 					System.out.println("Sie haben gewonnen!");
 					System.out.println("Versuche	:	" + versuche);
-					isPlayAgain = "n";
+					playAgain = "n";
 				} else {
 					System.out.println("Sie haben leider verloren.");
 				}
 				
 				
 				System.out.print("Nochmal spielen? (y/n) ");
-				if(isPlayAgain.equals("y")) {
+				if(playAgain.equals("y")) {
 					System.out.println("\n\n_____________________________________________\n");
 					hangman.resetGame();
 				} else {
-					playAgain = false;
+					isPlayAgain = false;
 				}
 				
 			}
+			System.out.println(System.currentTimeMillis() - start);
 		}
 	
 	private void initGame() {
@@ -73,7 +76,7 @@ public class Hangman {
 	public void playGame() {
 			
 			try {
-				Thread.sleep(100);
+				Thread.sleep(0);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -154,19 +157,11 @@ public class Hangman {
 		}
 		
 	private boolean isBuchstabeAufBlacklist(char myChar) {
-			if(blacklist.contains(myChar)) {
-				return true;
-			} else {
-				return false;
-			}
+			return blacklist.contains(myChar);
 		}
 		
 	private boolean isBuchstabeVorhanden(char myChar) {
-			if(gesuchtesWortClone.toString().contains(String.valueOf(myChar))) {
-				return true;
-			} else {
-				return false;
-			}
+			return gesuchtesWortClone.toString().contains(String.valueOf(myChar));
 		}
 		
 	private void setzeBuchstabenEin(char myChar) {
@@ -184,12 +179,8 @@ public class Hangman {
 		}
 		
 	private boolean isWortGefunden() {
-			if(gesuchtesWortTrimmed.equals(String.valueOf(momentanesWort).toLowerCase())) {
-				return true;
-			} else {
-				return false;
-			}
-		}
+		return gesuchtesWortTrimmed.equals(String.valueOf(momentanesWort).toLowerCase());
+	}
 		
 	private void addCharZuBlacklist(char myChar) {
 			blacklist.add(myChar);
